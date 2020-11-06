@@ -4,9 +4,16 @@
 <h2>@ViewBag.Title.</h2>
 <h3>@ViewBag.Message</h3>
 <ul class="list-group">
-    <li class="list-group-item">Request Token: @Session["requestToken"]</li>
-    <li class="list-group-item">Access Token: @Session["accessToken"]</li>
-    <li class="list-group-item">Авторизованы: @Session["LogIn"]</li> 
+    <li class="list-group-item list-group-item-info">Request Token: @Session["requestToken"]</li>
+    <li class="list-group-item list-group-item-info">Access Token: @Session["accessToken"]</li>
+    @if (Convert.ToBoolean(@Session["LogIn"]))
+    {
+        <li class="list-group-item list-group-item-success">Авторизованы: Да</li>
+    }
+    else
+    {
+        <li class="list-group-item list-group-item-success">Авторизованы: Нет</li>
+    }
 </ul>
 
 <p>Use this area to provide additional information.</p>

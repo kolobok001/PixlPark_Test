@@ -8,9 +8,17 @@
         Токены получены
     </div>
     <ul class="list-group">
-        <li class="list-group-item">Request Token: @Session["requestToken"]</li>
-        <li class="list-group-item">Access Token: @Session["accessToken"]</li>
-        <li class="list-group-item">Авторизованы: @Session["LogIn"]</li>
+        <li class="list-group-item list-group-item-info">Request Token: @Session["requestToken"]</li>
+        <li class="list-group-item list-group-item-info">Access Token: @Session["accessToken"]</li>
+        @if (Convert.ToBoolean(@Session["LogIn"]))
+        {
+            <li class="list-group-item list-group-item-success">Авторизованы: Да</li>
+        }
+        else
+        {
+            <li class="list-group-item list-group-item-success">Авторизованы: Нет</li>
+        }
+
     </ul>
     <p><a href="/Home/Orders" class="btn btn-primary btn-lg">К заказам &raquo;</a></p>
 </div>

@@ -147,12 +147,12 @@ namespace Test_PixlPark.Controllers
                     if ((int)httpResponse.StatusCode == 401)
                     {
                         Autorization();
-                        RedirectToAction(action);
+                        Response.Redirect(Request.RawUrl);
                     }
-                    else
-                    return("Статусный код ошибки:" +(int)httpResponse.StatusCode + httpResponse.StatusCode);
+                    return ("Статусный код ошибки:" + (int)httpResponse.StatusCode + httpResponse.StatusCode+ ". Обновите страницу.");
                 }
-                return "Ошибка";
+                return "Ошибка, обновите страницу";
+                
             }
             
 
