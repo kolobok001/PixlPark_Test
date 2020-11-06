@@ -1,0 +1,17 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+<div class="jumbotron">
+    <h1>Главная страница</h1>
+    <div class="alert alert-success" role="alert">
+        Токены получены
+    </div>
+    <ul class="list-group">
+        <li class="list-group-item">Request Token: @Session["requestToken"]</li>
+        <li class="list-group-item">Access Token: @Session["accessToken"]</li>
+        <li class="list-group-item">Авторизованы: @Session["LogIn"]</li>
+    </ul>
+    <p><a href="/Home/Orders" class="btn btn-primary btn-lg">К заказам &raquo;</a></p>
+</div>
+
