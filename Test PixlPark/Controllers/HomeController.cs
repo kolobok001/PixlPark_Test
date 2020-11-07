@@ -11,6 +11,8 @@ using System.Web.Script.Serialization;
 using System.Security.Cryptography;
 using System.Text;
 using Microsoft.Ajax.Utilities;
+using Newtonsoft.Json;
+using Test_PixlPark.Models;
 
 namespace Test_PixlPark.Controllers
 {
@@ -109,17 +111,18 @@ namespace Test_PixlPark.Controllers
             }
             return "";
         }
-        private string GetOrders(string oauth_token,string action)
+        private List<Order> GetOrders(string oauth_token,string action,int count = 10,int skip = 0)
         {
             // Адрес ресурса, к которому выполняется запрос
             string url = "http://api.pixlpark.com/orders?";
-            string param = "oauth_token=" + oauth_token;
+            string param = "oauth_token=" + oauth_token+ "&count="+count+"&skip=" + skip ;
 
 
             var httpWebRequest = (HttpWebRequest)WebRequest.Create(url + param);
 
             httpWebRequest.ContentType = "text/json";
             httpWebRequest.Method = "GET";
+            List<Order> orders = new List<Order>();
             try
             {
                 var httpResponse = (HttpWebResponse)httpWebRequest.GetResponse();
@@ -127,13 +130,9 @@ namespace Test_PixlPark.Controllers
                 {
                     //ответ от сервера
                     var response = streamReader.ReadToEnd();
-                    //bool success = Convert.ToBoolean(JObject.Parse(response)["Success"].ToString());
-                    //if (success)
-                    //{
-                    //    return JObject.Parse(response)["AccessToken"].ToString();
-                    //}
-
-                    return response;
+                    var result = JObject.Parse(response)["Result"].ToString();
+                    orders = JsonConvert.DeserializeObject<List<Order>>(result);
+                    return orders;
                 }
             }
             catch(WebException ex)
@@ -149,12 +148,53 @@ namespace Test_PixlPark.Controllers
                         Autorization();
                         Response.Redirect(Request.RawUrl);
                     }
-                    return ("Статусный код ошибки:" + (int)httpResponse.StatusCode + httpResponse.StatusCode+ ". Обновите страницу.");
                 }
-                return "Ошибка, обновите страницу";
+                return orders ;
                 
             }
             
+
+        }
+        private int GetOrdersCount(string oauth_token)
+        {
+            // Адрес ресурса, к которому выполняется запрос
+            string url = "http://api.pixlpark.com/orders/count?";
+            string param = "oauth_token=" + oauth_token;
+
+
+            var httpWebRequest = (HttpWebRequest)WebRequest.Create(url + param);
+
+            httpWebRequest.ContentType = "text/json";
+            httpWebRequest.Method = "GET";
+            try
+            {
+                var httpResponse = (HttpWebResponse)httpWebRequest.GetResponse();
+                using (var streamReader = new StreamReader(httpResponse.GetResponseStream()))
+                {
+                    //ответ от сервера
+                    var response = streamReader.ReadToEnd();
+                    int result = Convert.ToInt32(JObject.Parse(response)["Result"][0]["count"].ToString());
+                    return result;
+                }
+            }
+            catch (WebException ex)
+            {
+                // получаем статус исключения
+                WebExceptionStatus status = ex.Status;
+
+                if (status == WebExceptionStatus.ProtocolError)
+                {
+                    HttpWebResponse httpResponse = (HttpWebResponse)ex.Response;
+                    if ((int)httpResponse.StatusCode == 401)
+                    {
+                        Autorization();
+                        Response.Redirect(Request.RawUrl);
+                    }
+                }
+                return 0;
+
+            }
+
 
         }
         public ActionResult Index()
@@ -191,13 +231,17 @@ namespace Test_PixlPark.Controllers
 
         }
 
-        public ActionResult Orders()
+        public ActionResult Orders(int page = 1)
         {
+            int pageSize = 10;
             ViewBag.Message = "Тут будут все заказы";
             if (Convert.ToBoolean(Session["LogIn"]))
             {
-                ViewBag.Response = GetOrders(Session["accessToken"].ToString(),"Orders");
-                return View();
+                int skip = (page - 1) * pageSize;
+                List<Order> orders = GetOrders(Session["accessToken"].ToString(),"Orders",pageSize,skip);
+                PageInfo pageInfo = new PageInfo { PageNumber = page, PageSize = pageSize, TotalItems = GetOrdersCount(Session["accessToken"].ToString()) };
+                IndexViewModel ivm = new IndexViewModel { PageInfo = pageInfo, Orders = orders };
+                return View(ivm);
             }
             else
                 return RedirectToAction("Index");

@@ -1,4 +1,6 @@
-﻿@{
+﻿@model Test_PixlPark.Models.IndexViewModel
+@using Test_PixlPark.Helpers
+@{
     ViewBag.Title = "Заказы";
 }
 <h2>@ViewBag.Title.</h2>
@@ -15,6 +17,37 @@
         <li class="list-group-item list-group-item-success">Авторизованы: Нет</li>
     }
 </ul>
+<p>
+    <a class="btn btn-primary" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+        Ссылка с href
+    </a>
+    <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+        Кнопка с data-target
+    </button>
+</p>
+<div class="collapse" id="collapseExample">
+    <div class="card card-body">
+        Скрытый текст
+    </div>
+</div>
 
-<p>Use this area to provide additional information.</p>
-<div>@ViewBag.Response</div>
+<table>
+    <tr class="header">
+        <td><p>id</p></td>
+        <td><p>Статус</p></td>
+        <td><p>дата</p></td>
+        <td></td>
+    </tr>
+    @foreach (Test_PixlPark.Models.Order b in Model.Orders)
+    {
+        <tr>
+            <td><p>@b.Id</p></td>
+            <td><p>@b.Status</p></td>
+            <td><p>@b.DateCreated</p></td>
+        </tr>
+    }
+</table>
+<br />
+<div class="btn-group">
+    @Html.PageLinks(Model.PageInfo, x => Url.Action("Orders", new { page = x }))
+</div>
