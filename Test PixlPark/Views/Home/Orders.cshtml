@@ -6,8 +6,8 @@
 <script>
     function Hidden(id) {
         console.log(id);
-        console.log(document.getElementById(id).hidden);
-        document.getElementById(id).hidden =  !document.getElementById(id).hidden;
+        console.log(document.getElementById(id).style.display);
+        document.getElementById(id).hidden = !document.getElementById(id).hidden;
     }
 </script>
 <h3>@ViewBag.Message</h3>
@@ -29,25 +29,21 @@
     {
         <li class="list-group-item">
 
-    <div class="row">
-        <div class="col">
-            <h4>@b.Title</h4>
-            <button class="btn btn-primary" type="button" onclick="Hidden('table@{@b.Id}')">
-                Подробнее
-            </button>
+            <div class="row">
+                <div class="col">
+                    <h4>@b.Title</h4>
 
-            @if (@b.DeliveryAddress != null)
-            {
-                <button class="btn btn-primary" type="button" onclick="Hidden('delivery@{@b.Id}')">
-                    Доставка
-                </button>
-            }
-        </div>
-    </div>
+                    <button class="btn btn-primary" type="button" onclick="Hidden('info@{@b.Id}');">
+                        Подробнее
+                    </button>
+                </div>
+                
+            </div>
             
-    <div class="row">
+    <div class="row" id="info@{@b.Id}" hidden>
         <div class="col">
-            <table class="table" id="table@{@b.Id}" style="margin-top:15px" hidden>
+            <table class="table" style="margin-top:15px">
+                <caption>Подробности</caption>
                 <thead class="thead-dark">
                     <tr>
                         <th scope="col">ID</th>
@@ -69,7 +65,8 @@
         @if (@b.DeliveryAddress != null)
         {
             <div class="col">
-                <table class="table" id="delivery@{@b.Id}" style="margin-top:15px" hidden>
+                <table class="table" style="margin-top:15px">
+                    <caption>Доставка</caption>
                     <thead class="thead-dark">
                         <tr>
                             <th scope="col">Индекс</th>
