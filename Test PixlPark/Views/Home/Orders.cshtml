@@ -3,7 +3,13 @@
 @{
     ViewBag.Title = "Заказы";
 }
-<h2>@ViewBag.Title.</h2>
+<script>
+    function Hidden(id) {
+        console.log(id);
+        console.log(document.getElementById(id).hidden);
+        document.getElementById(id).hidden =  !document.getElementById(id).hidden;
+    }
+</script>
 <h3>@ViewBag.Message</h3>
 <ul class="list-group">
     <li class="list-group-item list-group-item-info">Request Token: @Session["requestToken"]</li>
@@ -17,37 +23,81 @@
         <li class="list-group-item list-group-item-success">Авторизованы: Нет</li>
     }
 </ul>
-<p>
-    <a class="btn btn-primary" data-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
-        Ссылка с href
-    </a>
-    <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
-        Кнопка с data-target
-    </button>
-</p>
-<div class="collapse" id="collapseExample">
-    <div class="card card-body">
-        Скрытый текст
-    </div>
-</div>
 
-<table>
-    <tr class="header">
-        <td><p>id</p></td>
-        <td><p>Статус</p></td>
-        <td><p>дата</p></td>
-        <td></td>
-    </tr>
+<ul class="list-group list-group-flush">
     @foreach (Test_PixlPark.Models.Order b in Model.Orders)
     {
-        <tr>
-            <td><p>@b.Id</p></td>
-            <td><p>@b.Status</p></td>
-            <td><p>@b.DateCreated</p></td>
-        </tr>
+        <li class="list-group-item">
+
+    <div class="row">
+        <div class="col">
+            <h4>@b.Title</h4>
+            <button class="btn btn-primary" type="button" onclick="Hidden('table@{@b.Id}')">
+                Подробнее
+            </button>
+
+            @if (@b.DeliveryAddress != null)
+            {
+                <button class="btn btn-primary" type="button" onclick="Hidden('delivery@{@b.Id}')">
+                    Доставка
+                </button>
+            }
+        </div>
+    </div>
+            
+    <div class="row">
+        <div class="col">
+            <table class="table" id="table@{@b.Id}" style="margin-top:15px" hidden>
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">ID</th>
+                        <th scope="col">Статус</th>
+                        <th scope="col">Итоговая цена</th>
+                        <th scope="col">Дата создания</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>@b.Id</td>
+                        <td>@b.Status</td>
+                        <td>@b.TotalPrice</td>
+                        <td>@b.DateCreated</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        @if (@b.DeliveryAddress != null)
+        {
+            <div class="col">
+                <table class="table" id="delivery@{@b.Id}" style="margin-top:15px" hidden>
+                    <thead class="thead-dark">
+                        <tr>
+                            <th scope="col">Индекс</th>
+                            <th scope="col">Адрес</th>
+                            <th scope="col">Город</th>
+                            <th scope="col">Страна</th>
+                            <th scope="col">ФИО</th>
+                            <th scope="col">Телефон</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>@b.DeliveryAddress.ZipCode</td>
+                            <td>@b.DeliveryAddress.AddressLine1</td>
+                            <td>@b.DeliveryAddress.City</td>
+                            <td>@b.DeliveryAddress.Country</td>
+                            <td>@b.DeliveryAddress.FullName</td>
+                            <td>@b.DeliveryAddress.Phone</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        }
+    </div>
+            </li>
+
     }
-</table>
-<br />
-<div class="btn-group">
-    @Html.PageLinks(Model.PageInfo, x => Url.Action("Orders", new { page = x }))
-</div>
+</ul>
+    <div class="btn-group">
+        @Html.PageLinks(Model.PageInfo, x => Url.Action("Orders", new { page = x }))
+    </div>
